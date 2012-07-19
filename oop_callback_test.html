@@ -1,0 +1,52 @@
+<!-----
+
+A small code sample in which an object initiates a setTimeout calling a function of the object itself. It uses the special 'this' keyword and explains the 'self' temp var workaround.
+
+This should also work for other timeout callbacks like AJAX callbacks.
+
+More about the 'this' keyword and javascript scopes: http://howtonode.org/what-is-this
+
+Tested in Chrome.
+
+By Wouter de Meijer
+---->
+
+<html>
+<head>
+	<script>
+	wObject = function(name) {
+		this.name = name;
+	
+	}
+	wObject.prototype = {
+		show_name: function() {
+			alert("Name: "+this.name);
+		},
+		start_timeout: function() {
+			// Use a temp variable to bridge the current this (wObject instance) into the scope of the function in the setTimeout where the current 'this' would otherwise get overwritten and lost.
+			var self = this;
+			//^^ Do NOT forget "var" declaration.
+		
+		
+			setTimeout(function()	{
+										//The scope has changed. The current 'this' does not refer to the wObject instance but to the current function. The 'self' var we declared still points to the 'this' of the wObject instance though.
+										self.show_name()
+							
+									}, 2000);
+		}
+	};
+	wObject.prototype.constructor = wObject;
+
+	objecta = new wObject('Object A');
+	objecta.show_name();
+	objecta.start_timeout();
+
+	objectb = new wObject('Object B');
+	objectb.show_name();
+	objectb.start_timeout();
+	</script>
+</head>
+<body>
+
+</body>
+</html>
